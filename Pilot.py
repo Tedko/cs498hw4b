@@ -26,7 +26,7 @@ class Pilot (Ckpt.Ckpt):            # subclass of the class Ckpt in the file Ckp
         sf.towerLocation = [37.61701, -122.3836]
 
         sf.towerAlt = 180 #height of Tower
-        sf.flyawayDist = 4000
+        sf.flyawayDist = 5000
         sf.levelFlightAlt = 1000
         sf.radius = 1000
         #sf.initLocation = [37.6, -122.34] # dist to T = 4280.936885481255
@@ -55,6 +55,9 @@ class Pilot (Ckpt.Ckpt):            # subclass of the class Ckpt in the file Ckp
         sf.prevHeadDiff = 0
         sf.cumHeadDiff = 0
         sf.FinalBuzz = False
+
+        sf.firstACenable = True
+        sf.firstHCenable = False
 
     def ai(sf,fDat,fCmd):
 
@@ -120,7 +123,7 @@ class Pilot (Ckpt.Ckpt):            # subclass of the class Ckpt in the file Ckp
 
         #now, init angel change done; level flight to the init pt
         elif not sf.levelFlightToInitDone:
-            if TDistDiff > 5000 :
+            if TDistDiff > sf.flyawayDist :
                 sf.levelFlightToInitDone = True
             if not sf.levelFlightToInitPlaned:
                 if sf.ac.PC(fDat, sf.levelFlightAlt-curAlt, -10, 200) == 'OK':
@@ -154,8 +157,8 @@ class Pilot (Ckpt.Ckpt):            # subclass of the class Ckpt in the file Ckp
         #trun to tower done, level flight again!
         elif (not sf.flybackACDone):
             if not sf.flybackACPlaned:
-                if sf.ac.PC(fDat, 200-curAlt, -10, 150) == 'OK':
-                    sf.ac.PLAN(fDat, 200-curAlt, -10, 150,ForeverMode = True)
+                if sf.ac.PC(fDat, 250-curAlt, -10, 150) == 'OK':
+                    sf.ac.PLAN(fDat, 250-curAlt, -10, 150,ForeverMode = True)
                     sf.flybackACPlaned = True
                     print('Planned altitude change,levelFlightToInit')
                 else:
@@ -163,9 +166,9 @@ class Pilot (Ckpt.Ckpt):            # subclass of the class Ckpt in the file Ckp
             else:#already planned, level flight DO
                 print('Close until 3500')
                 sf.ac.DO(fDat, fCmd)
-                if (TDistDiff < 3000): #
+                if (TDistDiff < 3500): #
                     sf.flybackACDone = True
-                    print('fly !!!!!,less than 3000')
+                    print('fly !!!!!')
 
         #do the final HC adjust
         elif (not sf.finalInitHC) and (not sf.finalInitHCDone):
@@ -181,8 +184,8 @@ class Pilot (Ckpt.Ckpt):            # subclass of the class Ckpt in the file Ckp
         #lower, and be closer
         elif (not sf.finalACDone):
             if not sf.finalACPlaned:
-                if sf.ac.PC(fDat, 250-curAlt, -10, 150) == 'OK':
-                    sf.ac.PLAN(fDat, 250-curAlt, -10, 150,ForeverMode = True)
+                if sf.ac.PC(fDat, 180-curAlt, -10, 150) == 'OK':
+                    sf.ac.PLAN(fDat, 180-curAlt, -10, 150,ForeverMode = True)
                     sf.finalACPlaned = True
                     print('Planned altitude change,level f to buzz')
                 else:
