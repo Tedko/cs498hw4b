@@ -5,6 +5,7 @@ import ClassCode.Ckpt as Ckpt
 import ClassCode.Utilities
 import ClassCode.Fgfs
 import imp, sys
+import PID
 
 import HC
 import AC
@@ -73,7 +74,6 @@ class Pilot (Ckpt.Ckpt):            # subclass of the class Ckpt in the file Ckp
 
         print("=============")
         print("TDistDiff",TDistDiff)
-        print("currLocation",curLocation)
         print("=============")
 
 ###1st: go to the given alt
@@ -90,6 +90,7 @@ class Pilot (Ckpt.Ckpt):            # subclass of the class Ckpt in the file Ckp
                 elif sf.ac.DO(fDat, fCmd) == 'DONE' :
                     sf.firstInitACDone = True
                     sf.firstACenable = False
+                    sf.firstHCenable = True
 
 ###2nd: chaneg degree:fly opposite to Tower
 
@@ -129,12 +130,9 @@ class Pilot (Ckpt.Ckpt):            # subclass of the class Ckpt in the file Ckp
             if TDistDiff > sf.flyawayDist :
                 sf.levelFlightToInitDone = True
             if not sf.levelFlightToInitPlaned:
-                if sf.ac.PC(fDat, sf.levelFlightAlt-curAlt, -10, 200) == 'OK':
-                    sf.ac.PLAN(fDat, sf.levelFlightAlt-curAlt, -10, 200,ForeverMode = True)
-                    sf.levelFlightToInitPlaned = True
-                    print('Planned altitude change,levelFlightToInit')
-                else:
-                    print('Can not achieve target')
+                sf.ac.PLAN(fDat, sf.levelFlightAlt-curAlt, -10, 200,ForeverMode = True)
+                sf.levelFlightToInitPlaned = True
+                print('Planned altitude change,levelFlightToInit')
             else:#already planned, level flight DO
                 print('fly levelFlight to fly away')
                 sf.ac.DO(fDat, fCmd)
@@ -159,16 +157,16 @@ class Pilot (Ckpt.Ckpt):            # subclass of the class Ckpt in the file Ckp
         #trun to tower done, level flight again!
         elif (not sf.flybackACDone):
             if not sf.flybackACPlaned:
-                if sf.ac.PC(fDat, 250-curAlt, -10, 150) == 'OK':
-                    sf.ac.PLAN(fDat, 250-curAlt, -10, 150,ForeverMode = True)
+                if sf.ac.PC(fDat, 300-curAlt, -10, 150) == 'OK':
+                    sf.ac.PLAN(fDat, 300-curAlt, -10, 150,ForeverMode = True)
                     sf.flybackACPlaned = True
                     print('Planned altitude change,levelFlightToInit')
                 else:
                     print('Can not achieve target')
             else:#already planned, level flight DO
-                print('Close until 3500')
+                print('Close until 4000')
                 sf.ac.DO(fDat, fCmd)
-                if (TDistDiff < 3500): #
+                if (TDistDiff < 4000): #
                     sf.flybackACDone = True
                     print('fly !!!!!')
 
@@ -195,7 +193,7 @@ class Pilot (Ckpt.Ckpt):            # subclass of the class Ckpt in the file Ckp
             else:#already planned, level flight DO
                 print('Close until reach the closest')
                 sf.ac.DO(fDat, fCmd)
-                if (TDistDiff < 700): #
+                if (TDistDiff > 800): #
                     sf.flybackACDone = True
                     sf.buzzTowel = True
                     print('fly !!!!!reach the closest')
