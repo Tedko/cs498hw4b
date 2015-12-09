@@ -77,16 +77,19 @@ class Pilot (Ckpt.Ckpt):            # subclass of the class Ckpt in the file Ckp
         print("=============")
 
 ###1st: go to the given alt
-        if (not sf.firstInitACDone):
-            if (not sf.firstInitACPlaned):
-                if sf.ac.PC(fDat, sf.levelFlightAlt-curAlt, -10, 200) == 'OK':
-                    sf.ac.PLAN(fDat, sf.levelFlightAlt-curAlt, -10, 200)
-                    sf.firstInitACPlaned = True
-                    print('Planned altitude change')
-                else:
-                    print('Can not achieve target')
-            elif sf.ac.DO(fDat, fCmd) == 'DONE' :
-                sf.firstInitACDone = True
+        if sf.firstACenable:
+            print("##1 go to the given alt")
+            if (not sf.firstInitACDone):
+                if (not sf.firstInitACPlaned):
+                    if sf.ac.PC(fDat, sf.levelFlightAlt-curAlt, -10, 200) == 'OK':
+                        sf.ac.PLAN(fDat, sf.levelFlightAlt-curAlt, -10, 200)
+                        sf.firstInitACPlaned = True
+                        print('Planned altitude change')
+                    else:
+                        print('Can not achieve target')
+                elif sf.ac.DO(fDat, fCmd) == 'DONE' :
+                    sf.firstInitACDone = True
+                    sf.firstACenable = False
 
 ###2nd: chaneg degree:fly opposite to Tower
 
@@ -119,7 +122,7 @@ class Pilot (Ckpt.Ckpt):            # subclass of the class Ckpt in the file Ckp
                 print('Init Angel Change DONE!')
 
 
-###3rd
+###3rd: level flight
 
         #now, init angel change done; level flight to the init pt
         elif not sf.levelFlightToInitDone:
@@ -153,7 +156,6 @@ class Pilot (Ckpt.Ckpt):            # subclass of the class Ckpt in the file Ckp
                 print('Fly Back Angel Change DONE!')
 
 
-        #???
         #trun to tower done, level flight again!
         elif (not sf.flybackACDone):
             if not sf.flybackACPlaned:
