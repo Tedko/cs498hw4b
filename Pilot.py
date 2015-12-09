@@ -27,7 +27,7 @@ class Pilot (Ckpt.Ckpt):            # subclass of the class Ckpt in the file Ckp
         sf.towerLocation = [37.61701, -122.3836]
 
         sf.towerAlt = 180 #height of Tower
-        sf.flyawayDist = 5000
+        sf.flyawayDist = 5500
         sf.levelFlightAlt = 1000
         sf.radius = 1000
         #sf.initLocation = [37.6, -122.34] # dist to T = 4280.936885481255
@@ -60,6 +60,9 @@ class Pilot (Ckpt.Ckpt):            # subclass of the class Ckpt in the file Ckp
         sf.firstACenable = True
         sf.firstHCenable = False
 
+        sf.buzzFirst = True
+        sf.firstDone = False
+
     def ai(sf,fDat,fCmd):
 
         #First fly away from Tower, to the counter direction of the T
@@ -74,6 +77,7 @@ class Pilot (Ckpt.Ckpt):            # subclass of the class Ckpt in the file Ckp
 
         print("=============")
         print("TDistDiff",TDistDiff)
+        print("headDiff",headDiff)
         print("=============")
 
 ###1st: go to the given alt
@@ -162,7 +166,7 @@ class Pilot (Ckpt.Ckpt):            # subclass of the class Ckpt in the file Ckp
         #trun to tower done, level flight again!
         elif (not sf.flybackACDone):
             if not sf.flybackACPlaned:
-                sf.ac.PLAN(fDat, 300-curAlt, -10, 150,ForeverMode = True)
+                sf.ac.PLAN(fDat, 270-curAlt, -10, 150,ForeverMode = True)
                 sf.flybackACPlaned = True
                 print('Planned altitude change,levelFlightToInit')
             else:#already planned, level flight DO
@@ -186,16 +190,16 @@ class Pilot (Ckpt.Ckpt):            # subclass of the class Ckpt in the file Ckp
         #lower, and be closer
         elif (not sf.finalACDone):
             if not sf.finalACPlaned:
-                sf.ac.PLAN(fDat, 180-curAlt, -10, 150,ForeverMode = True)
+                sf.ac.PLAN(fDat, 150-curAlt, -10, 150,ForeverMode = True)
                 sf.finalACPlaned = True
                 print('Planned altitude change,level f to buzz')
 
             else:#already planned, level flight DO
                 print('Close until reach the closest')
                 sf.ac.DO(fDat, fCmd)
-                if (TDistDiff < 1000): #
+                if (TDistDiff > sf.prevDistDiff): #
                     sf.flybackACDone = True
-                    sf.buzzTowel = True
+                    sf.FinalBuzz = True
                     print('fly !!!!!reach the closest')
 
 
@@ -203,10 +207,46 @@ class Pilot (Ckpt.Ckpt):            # subclass of the class Ckpt in the file Ckp
             if sf.buzzInit:
                 sf.hc.PLAN(fDat,1000,headDiff)
                 sf.buzzInit = False
-            elif sf.hc.DO(fDat, fCmd) == 'DONE' :
-                sf.FinalBuzz = True
-                print('Last HC Done!')
+            elif (TDistDiff + 10 < sf.prevDistDiff)  :
+                sf.hc.DO(fDat, fCmd)
+            else:
+                sf.buzzTowel = False
+                #sf.FinalBuzz = True
             #here buzz T
+
+
+        elif sf.FinalBuzz:
+
+            print("!!!!!!!!")
+            print("sf.cumHeadDiff",sf.cumHeadDiff)
+            print("!!!!!!!!")
+            if sf.prevHeadDiff < 0: #right
+                if sf.buzzFirst:
+                    sf.hc.PLAN(fDat,200,20)
+                    sf.buzzFirst = False
+                else:
+                    if sf.hc.DO(fDat, fCmd) == 'DONE':
+                        if not sf.firstDone:
+                            sf.hc.PLAN(fDat,200,10)
+                            sf.firstDone = True
+                        else:
+                            return 'stop'
+
+                # fCmd.aileron = -0.7
+                # hc.BuzzL(fDat, fCmd)
+            else: #left
+                if sf.buzzFirst:
+                    sf.hc.PLAN(fDat,200,-20)
+                    sf.buzzFirst = False
+                else:
+                    if sf.hc.DO(fDat, fCmd) == 'DONE':
+                        if not sf.firstDone:
+                            sf.hc.PLAN(fDat,200,-10)
+                            sf.firstDone = True
+                        else:
+                            return 'stop'
+                # fCmd.aileron = 0.7
+                # hc.BuzzL(fDat, fCmd)
 
             # diff = sf.prevHeadDiff - headDiff
             # if diff > 180:

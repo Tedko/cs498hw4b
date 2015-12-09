@@ -141,6 +141,38 @@ class Planner:
             return 'CONTINUE'
 
 
+    def BuzzL(sf,fDat, fCmd):
+        if(sf.prevTime == fDat.time): #if the same package, skip
+            return'SAMEPACKAGE'
+        else:
+                sf.BuzzStartTime = fDat.time
+
+                timeDiff = fDat.time-sf.prevTime
+                timer = fDat.time - sf.BuzzStartTime
+
+                pitch = fDat.pitch
+                roll = fDat.roll
+
+                pitchPIDRet = sf.pitchPID.pid(0.0-pitch,timeDiff)
+                rollPIDRet = sf.rollPID.pid(0.0-roll,timeDiff)
+
+                print('timer', timer)
+
+                starttime = 0
+
+                if(timer >= starttime and timer<starttime+0.8):
+                    fCmd.aileron = 1.0
+                # elif(timer >= starttime+2.8 and timer<starttime+3.4):
+                #     fCmd.aileron = -1.0
+                elif(timer >= 10):
+                    return 'DONE'
+                else:
+                    fCmd.aileron = rollPIDRet
+                    fCmd.elevator = -pitchPIDRet
+
+                sf.prevTime = fDat.time
+
+
 
     def AileronRoll(sf,fDat, fCmd):
 
