@@ -109,6 +109,8 @@ class Pilot (Ckpt.Ckpt):            # subclass of the class Ckpt in the file Ckp
 
         elif sf.firstInitHC and (not sf.initHCdone):
             #sf.hcInit(fDat,fCmd,headDiff+180,sf.firstInitHC)
+            if TDistDiff > sf.flyawayDist :
+                sf.initHCdone = True
             if sf.hc.PC(fDat,sf.radius,headDiff+180) == 'OK':
                 sf.hc.PLAN(fDat,sf.radius,headDiff+180)
                 sf.firstInitHC = False
@@ -153,18 +155,16 @@ class Pilot (Ckpt.Ckpt):            # subclass of the class Ckpt in the file Ckp
                 sf.flybackHCdone = True
                 print('Fly Back Angel Change DONE!')
 
+###4000m trun,HC crt
 
         #trun to tower done, level flight again!
         elif (not sf.flybackACDone):
             if not sf.flybackACPlaned:
-                if sf.ac.PC(fDat, 300-curAlt, -10, 150) == 'OK':
-                    sf.ac.PLAN(fDat, 300-curAlt, -10, 150,ForeverMode = True)
-                    sf.flybackACPlaned = True
-                    print('Planned altitude change,levelFlightToInit')
-                else:
-                    print('Can not achieve target')
+                sf.ac.PLAN(fDat, 300-curAlt, -10, 150,ForeverMode = True)
+                sf.flybackACPlaned = True
+                print('Planned altitude change,levelFlightToInit')
             else:#already planned, level flight DO
-                print('Close until 4000')
+                print('Close until 4000, do HC crt again')
                 sf.ac.DO(fDat, fCmd)
                 if (TDistDiff < 4000): #
                     sf.flybackACDone = True
@@ -193,7 +193,7 @@ class Pilot (Ckpt.Ckpt):            # subclass of the class Ckpt in the file Ckp
             else:#already planned, level flight DO
                 print('Close until reach the closest')
                 sf.ac.DO(fDat, fCmd)
-                if (TDistDiff > 800): #
+                if (TDistDiff > 100): #
                     sf.flybackACDone = True
                     sf.buzzTowel = True
                     print('fly !!!!!reach the closest')
