@@ -120,6 +120,8 @@ class Pilot (Ckpt.Ckpt):            # subclass of the class Ckpt in the file Ckp
 
         elif (not sf.firstInitHC) and (not sf.initHCdone):
             #sf.hcDo(fDat,fCmd,headDiff,sf.initHCdone)
+            if TDistDiff > sf.flyawayDist :
+                sf.initHCdone = True
             if sf.hc.DO(fDat, fCmd) == 'DONE' :
                 sf.initHCdone = True
                 print('Init Angel Change DONE!')
@@ -193,7 +195,7 @@ class Pilot (Ckpt.Ckpt):            # subclass of the class Ckpt in the file Ckp
             else:#already planned, level flight DO
                 print('Close until reach the closest')
                 sf.ac.DO(fDat, fCmd)
-                if (TDistDiff > 100): #
+                if (TDistDiff < 1000): #
                     sf.flybackACDone = True
                     sf.buzzTowel = True
                     print('fly !!!!!reach the closest')
