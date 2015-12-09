@@ -186,12 +186,10 @@ class Pilot (Ckpt.Ckpt):            # subclass of the class Ckpt in the file Ckp
         #lower, and be closer
         elif (not sf.finalACDone):
             if not sf.finalACPlaned:
-                if sf.ac.PC(fDat, 180-curAlt, -10, 150) == 'OK':
-                    sf.ac.PLAN(fDat, 180-curAlt, -10, 150,ForeverMode = True)
-                    sf.finalACPlaned = True
-                    print('Planned altitude change,level f to buzz')
-                else:
-                    print('Can not achieve target')
+                sf.ac.PLAN(fDat, 180-curAlt, -10, 150,ForeverMode = True)
+                sf.finalACPlaned = True
+                print('Planned altitude change,level f to buzz')
+
             else:#already planned, level flight DO
                 print('Close until reach the closest')
                 sf.ac.DO(fDat, fCmd)
