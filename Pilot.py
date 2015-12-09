@@ -23,7 +23,7 @@ class Pilot (Ckpt.Ckpt):            # subclass of the class Ckpt in the file Ckp
         sf.ac = AC.AC()
         #sf.towerLocation = [37.61703, -122.383585]
 
-        sf.towerLocation = [37.61703, -122.383585]
+        sf.towerLocation = [37.61701, -122.3836]
 
         sf.towerAlt = 180 #height of Tower
         sf.flyawayDist = 4000
@@ -87,33 +87,33 @@ class Pilot (Ckpt.Ckpt):            # subclass of the class Ckpt in the file Ckp
 
 ###2nd: chaneg degree:fly opposite to Tower
 
-        elif (not sf.firstInitHCDone):
-            if (not sf.firstInitHCPlaned):
-                if sf.hc.PC(fDat,sf.radius,headDiff+180) == 'OK':
-                    sf.hc.PLAN(fDat,sf.radius,headDiff+180)
-                    sf.firstInitHCPlaned = True
-                    print('Try to trun the init Pt')
-                else:
-                    print('Try to trun the init Pt,not OK')
-            elif sf.hc.DO(fDat, fCmd) == 'DONE' :
-                print('Init Angel Change DONE!')
-                sf.firstInitHCDone = True
-
-
-        # elif sf.firstInitHC and (not sf.initHCdone):
-        #     #sf.hcInit(fDat,fCmd,headDiff+180,sf.firstInitHC)
-        #     if sf.hc.PC(fDat,sf.radius,headDiff+180) == 'OK':
-        #         sf.hc.PLAN(fDat,sf.radius,headDiff+180)
-        #         sf.firstInitHC = False
-        #         print('Try to trun the init Pt')
-        #     else:
-        #         print('Try to trun the init Pt,not OK')
-        #
-        # elif (not sf.firstInitHC) and (not sf.initHCdone):
-        #     #sf.hcDo(fDat,fCmd,headDiff,sf.initHCdone)
-        #     if sf.hc.DO(fDat, fCmd) == 'DONE' :
-        #         sf.initHCdone = True
+        # elif (not sf.firstInitHCDone):
+        #     if (not sf.firstInitHCPlaned):
+        #         if sf.hc.PC(fDat,sf.radius,headDiff+180) == 'OK':
+        #             sf.hc.PLAN(fDat,sf.radius,headDiff+180)
+        #             sf.firstInitHCPlaned = True
+        #             print('Try to trun the init Pt')
+        #         else:
+        #             print('Try to trun the init Pt,not OK')
+        #     elif sf.hc.DO(fDat, fCmd) == 'DONE' :
         #         print('Init Angel Change DONE!')
+        #         sf.firstInitHCDone = True
+
+
+        elif sf.firstInitHC and (not sf.initHCdone):
+            #sf.hcInit(fDat,fCmd,headDiff+180,sf.firstInitHC)
+            if sf.hc.PC(fDat,sf.radius,headDiff+180) == 'OK':
+                sf.hc.PLAN(fDat,sf.radius,headDiff+180)
+                sf.firstInitHC = False
+                print('Try to trun the init Pt')
+            else:
+                print('Try to trun the init Pt,not OK')
+
+        elif (not sf.firstInitHC) and (not sf.initHCdone):
+            #sf.hcDo(fDat,fCmd,headDiff,sf.initHCdone)
+            if sf.hc.DO(fDat, fCmd) == 'DONE' :
+                sf.initHCdone = True
+                print('Init Angel Change DONE!')
 
 
 ###3rd
