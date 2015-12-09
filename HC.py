@@ -24,12 +24,13 @@ class Planner:
         sf.arstart = False
         sf.Victory = False
 
-    def PC(sf, radius, angle):
+    def PC(sf, fDat, radius, angle):
         angle = angle % 360
         if(radius >= 1000 and angle <= 355):
             return 'OK'
         else:
             return [1000,355]
+
 
     def PLAN(sf, fDat, radius, angle):
         curHeading = fDat.head
